@@ -2,18 +2,23 @@ from flask import Flask, request, render_template_string
 import re
 import requests
 
+# ----------------- FLASK APP -----------------
 app = Flask(__name__)
 
-HTML = open("index.html", encoding="utf-8").read()
-CSS = open("style.css", encoding="utf-8").read()
+# ----------------- LOAD HTML/CSS -----------------
+with open("index.html", encoding="utf-8") as f:
+    HTML = f.read()
 
+with open("style.css", encoding="utf-8") as f:
+    CSS = f.read()
+
+# ----------------- HEADERS AND TIMEOUT -----------------
 HEADERS = {
     "User-Agent": "Arskiy-OSINT/1.0"
 }
-
 TIMEOUT = 5
 
-
+# ----------------- DETECT TARGET -----------------
 def detect_target(q):
     if re.fullmatch(r"\+?\d{7,15}", q):
         return "PHONE"
@@ -21,7 +26,7 @@ def detect_target(q):
         return "USERNAME"
     return "UNKNOWN"
 
-
+# ----------------- CHECK ACCOUNT -----------------
 def check_exists(url):
     try:
         r = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
@@ -29,7 +34,7 @@ def check_exists(url):
     except:
         return False
 
-
+# ----------------- USERNAME OSINT -----------------
 def username_osint(username):
     platforms = {
         "Telegram": f"https://t.me/{username}",
@@ -47,7 +52,7 @@ def username_osint(username):
         }
     return results
 
-
+# ----------------- ROUTES -----------------
 @app.route("/", methods=["GET", "POST"])
 def index():
     report = None
@@ -68,6 +73,6 @@ def index():
         target=target
     )
 
-
+# ----------------- RUN APP -----------------
 if name == "__main__":
     app.run()
