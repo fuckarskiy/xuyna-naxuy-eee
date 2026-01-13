@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ARSKIY OSINT</title>
+    <style>{{STYLE}}</style>
+</head>
+<body>
+
+<div class="container">
+    <!-- HEADER / BRAND -->
+    <h1>ARSKIY OSINT</h1>
+    <p class="subtitle">Terminal OSINT Framework</p>
+
+    <!-- INPUT FORM -->
+    <form method="post">
+        <input name="query" placeholder="Enter username (Telegram / TikTok / GitHub)" required>
+        <button>ANALYZE</button>
+    </form>
+
+    <!-- REPORT TABLE -->
+    {% if report %}
+        <table>
+            <tr>
+                <th>Platform</th>
+                <th>Status</th>
+                <th>Link</th>
+            </tr>
+            {% for name, data in report.items() %}
+            <tr>
+                <td>{{ name }}</td>
+                <td class="{{ 'ok' if data.exists else 'fail' }}">
+                    {{ 'FOUND' if data.exists else 'NOT FOUND' }}
+                </td>
+                <td><a href="{{ data.url }}" target="_blank">open</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+
+    <!-- FOOTER -->
+    <footer>
+        © ARSKIY OSINT · PUBLIC INTELLIGENCE ONLY
+    </footer>
+</div>
+
+</body>
+</html>
