@@ -1,15 +1,22 @@
 from flask import Flask, request, render_template_string
 import re
 import requests
+import os
 
 # ----------------- FLASK APP -----------------
 app = Flask(__name__)
 
 # ----------------- LOAD HTML/CSS -----------------
-with open("index.html", encoding="utf-8") as f:
+HTML_FILE = "index.html"
+CSS_FILE = "style.css"
+
+if not os.path.exists(HTML_FILE) or not os.path.exists(CSS_FILE):
+    raise FileNotFoundError("index.html или style.css не найдены в корне проекта!")
+
+with open(HTML_FILE, encoding="utf-8") as f:
     HTML = f.read()
 
-with open("style.css", encoding="utf-8") as f:
+with open(CSS_FILE, encoding="utf-8") as f:
     CSS = f.read()
 
 # ----------------- HEADERS AND TIMEOUT -----------------
@@ -19,10 +26,10 @@ HEADERS = {
 TIMEOUT = 5
 
 # ----------------- DETECT TARGET -----------------
-def detect_target(q):
-    if re.fullmatch(r"\+?\d{7,15}", q):
+def detect_target(query):
+    if re.fullmatch(r"\+?\d{7,15}", query):
         return "PHONE"
-    if re.fullmatch(r"[a-zA-Z0-9_.]{3,32}", q):
+    if re.fullmatch(r"[a-zA-Z0-9_.]{3,32}", query):
         return "USERNAME"
     return "UNKNOWN"
 
@@ -31,7 +38,7 @@ def check_exists(url):
     try:
         r = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
         return r.status_code == 200
-    except:
+    except requests.RequestException:
         return False
 
 # ----------------- USERNAME OSINT -----------------
@@ -46,20 +53,21 @@ def username_osint(username):
 
     results = {}
     for name, url in platforms.items():
+        exists = check_exists(url)
         results[name] = {
             "url": url,
-            "exists": check_exists(url)
+            "exists": exists
         }
     return results
 
 # ----------------- ROUTES -----------------
 @app.route("/", methods=["GET", "POST"])
 def index():
-    report = None
+    report = {}
     target = None
 
     if request.method == "POST":
-        query = request.form["query"].strip()
+        query = request.form.get("query", "").strip()
         target = detect_target(query)
 
         if target == "USERNAME":
@@ -75,4 +83,4 @@ def index():
 
 # ----------------- RUN APP -----------------
 if name == "__main__":
-    app.run()
+    app.run(host="0.0.0.0", port=5000)
