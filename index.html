@@ -2,47 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ARSKIY OSINT</title>
-    <style>{{STYLE}}</style>
+    <title>ARSKIY</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+<canvas id="matrix"></canvas>
+<div class="overlay"></div>
+
 <div class="container">
-    <!-- HEADER / BRAND -->
-    <h1>ARSKIY OSINT</h1>
-    <p class="subtitle">Terminal OSINT Framework</p>
+    <h1 class="nick">ARSKIY</h1>
+    <p class="subtitle">OSINT • CYBER • DIGITAL SHADOW</p>
 
-    <!-- INPUT FORM -->
-    <form method="post">
-        <input name="query" placeholder="Enter username (Telegram / TikTok / GitHub)" required>
-        <button>ANALYZE</button>
-    </form>
+    <div class="panel">
+        <input id="username" placeholder="Telegram username (without @)">
+        <input id="phone" placeholder="Phone number (+)">
+        <button onclick="runOSINT()">SCAN</button>
+    </div>
 
-    <!-- REPORT TABLE -->
-    {% if report %}
-        <table>
-            <tr>
-                <th>Platform</th>
-                <th>Status</th>
-                <th>Link</th>
-            </tr>
-            {% for name, data in report.items() %}
-            <tr>
-                <td>{{ name }}</td>
-                <td class="{{ 'ok' if data.exists else 'fail' }}">
-                    {{ 'FOUND' if data.exists else 'NOT FOUND' }}
-                </td>
-                <td><a href="{{ data.url }}" target="_blank">open</a></td>
-            </tr>
-            {% endfor %}
-        </table>
-    {% endif %}
-
-    <!-- FOOTER -->
-    <footer>
-        © ARSKIY OSINT · PUBLIC INTELLIGENCE ONLY
-    </footer>
+    <div class="terminal" id="terminal"></div>
 </div>
 
+<script src="matrix.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
